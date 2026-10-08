@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Security helpers
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'pitendrakumarsahoo52@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Doctors directory
+    match /doctors/{doctorId} {
+      allow read: if isValidId(doctorId);
+      allow write: if isAdmin() && isValidId(doctorId);
+    }
+
+    // Doctor schedules
+    match /doctor_schedules/{scheduleId} {
+      allow read: if isValidId(scheduleId);
+      allow write: if isAdmin() && isValidId(scheduleId);
+
+      // Subcollection slots
+      match /slots/{slotId} {
+        allow read: if isValidId(slotId);
+        allow create, delete: if isAdmin() && isValidId(slotId);
+        allow update: if isValidId(slotId) && (
+          isAdmin() ||
+          // Public patient booking a slot: can only change status from available to booked
+          (existing().status == 'available' && incoming().status == 'booked') ||
+          // Public patient cancelling their appointment: changes slot back to available
+          (existing().status == 'booked' && incoming().status == 'available')
+        );
+      }
+    }
+
+    // Appointments
+    match /appointments/{appointmentId} {
+      allow read: if isValidId(appointmentId);
+      allow create: if isValidId(appointmentId) &&
+        incoming().patientName is string &&
+        incoming().patientPhone is string &&
+        incoming().status in ['pending', 'confirmed'];
+      allow update: if isValidId(appointmentId) && (
+        isAdmin() ||
+        // Patient cancellation
+        (incoming().status == 'cancelled')
+      );
+      allow delete: if isAdmin() && isValidId(appointmentId);
+    }
+
+    // Medicines catalogue
+    match /medicines/{medicineId} {
+      allow read: if isValidId(medicineId);
+      allow write: if isAdmin() && isValidId(medicineId);
+    }
+
+    // Medicine delivery requests
+    match /medicine_requests/{requestId} {
+      allow read: if isValidId(requestId);
+      allow create: if isValidId(requestId) &&
+        incoming().customerName is string &&
+        incoming().customerPhone is string;
+      allow update, delete: if isAdmin() && isValidId(requestId);
+    }
+
+    // Store settings
+    match /settings/{settingId} {
+      allow read: if isValidId(settingId);
+      allow write: if isAdmin() && isValidId(settingId);
+    }
+
+    // Admin audit logs
+    match /audit_logs/{logId} {
+      allow read: if isAdmin() && isValidId(logId);
+      allow create: if isAdmin() && isValidId(logId);
+      allow update, delete: if false;
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidId(adminId);
+    }
+
+    // Patient testimonials & reviews
+    match /reviews/{reviewId} {
+      allow read: if isValidId(reviewId);
+      allow create: if isValidId(reviewId) &&
+        incoming().patientName is string &&
+        incoming().comment is string;
+      allow update, delete: if isAdmin() && isValidId(reviewId);
+    }
+  }
+}

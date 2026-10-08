@@ -1,0 +1,259 @@
+{
+  "entities": {
+    "doctor": {
+      "title": "Doctor",
+      "description": "Doctor profile information and credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "specialization": { "type": "string" },
+        "qualification": { "type": "string" },
+        "experienceYears": { "type": "number" },
+        "gender": { "type": "string" },
+        "bio": { "type": "string" },
+        "areasOfConsultation": { "type": "string" },
+        "consultationFee": { "type": "number" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "displayOrder": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "specialization", "qualification", "consultationFee", "status"]
+    },
+    "doctorSchedule": {
+      "title": "Doctor Schedule",
+      "description": "Visiting schedule for doctors with timing and capacity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorSpecialization": { "type": "string" },
+        "doctorPhotoUrl": { "type": "string" },
+        "date": { "type": "string" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "slotDurationMinutes": { "type": "number" },
+        "maxPatients": { "type": "number" },
+        "consultationFee": { "type": "number" },
+        "bookedCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["upcoming", "available", "almost_full", "fully_booked", "in_progress", "completed", "cancelled", "hidden"] },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["doctorId", "doctorName", "date", "startTime", "endTime", "status"]
+    },
+    "appointmentSlot": {
+      "title": "Appointment Slot",
+      "description": "Generated consultation time slot for a schedule",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "scheduleId": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "date": { "type": "string" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "booked", "cancelled", "blocked"] },
+        "appointmentId": { "type": "string" }
+      },
+      "required": ["scheduleId", "startTime", "endTime", "status"]
+    },
+    "appointment": {
+      "title": "Appointment",
+      "description": "Patient consultation appointment record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "appointmentNumber": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorSpecialization": { "type": "string" },
+        "doctorPhotoUrl": { "type": "string" },
+        "scheduleId": { "type": "string" },
+        "slotId": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "patientName": { "type": "string" },
+        "patientAge": { "type": "number" },
+        "patientGender": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "patientEmail": { "type": "string" },
+        "patientAddress": { "type": "string" },
+        "reasonForVisit": { "type": "string" },
+        "isExistingPatient": { "type": "boolean" },
+        "emergencyContact": { "type": "string" },
+        "consultationFee": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "checked_in", "completed", "cancelled", "no_show"] },
+        "cancellationReason": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["appointmentNumber", "doctorId", "doctorName", "scheduleId", "date", "time", "patientName", "patientPhone", "status"]
+    },
+    "medicine": {
+      "title": "Medicine",
+      "description": "Pharmacy medicine catalog item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "genericName": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "packSize": { "type": "string" },
+        "price": { "type": "number" },
+        "discount": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "prescriptionRequired": { "type": "boolean" },
+        "stockStatus": { "type": "string", "enum": ["in_stock", "out_of_stock", "low_stock"] },
+        "featured": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "brand", "category", "price", "isAvailable", "prescriptionRequired"]
+    },
+    "medicineRequest": {
+      "title": "Medicine Delivery Request",
+      "description": "Customer medicine order and delivery enquiry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "requestNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "landmark": { "type": "string" },
+        "pincode": { "type": "string" },
+        "notes": { "type": "string" },
+        "prescriptionUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["new_request", "prescription_review", "accepted", "preparing", "out_for_delivery", "delivered", "rejected", "cancelled"] },
+        "estimatedTotal": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["requestNumber", "customerName", "customerPhone", "deliveryAddress", "status"]
+    },
+    "storeSettings": {
+      "title": "Store Settings",
+      "description": "Configurable contact, address, hours and website details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "address": { "type": "string" },
+        "googleMapsUrl": { "type": "string" },
+        "openingHours": { "type": "string" },
+        "aboutText": { "type": "string" },
+        "heroHeading": { "type": "string" },
+        "heroSubheading": { "type": "string" },
+        "emergencyDisclaimer": { "type": "string" },
+        "deliveryAvailable": { "type": "boolean" },
+        "deliveryAreas": { "type": "string" },
+        "cancellationWindowHours": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["businessName", "phone", "whatsappNumber", "address"]
+    },
+    "auditLog": {
+      "title": "Audit Log",
+      "description": "Log of actions performed by administrators",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["adminEmail", "action", "entityType"]
+    },
+    "adminUser": {
+      "title": "Admin User",
+      "description": "Authorized administrator record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    },
+    "review": {
+      "title": "Patient Review",
+      "description": "Patient feedback and testimonial for visiting doctors or pharmacy services",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patientName": { "type": "string" },
+        "locality": { "type": "string" },
+        "serviceType": { "type": "string", "enum": ["doctor_consultation", "pharmacy_delivery", "general_care"] },
+        "doctorName": { "type": "string" },
+        "rating": { "type": "number" },
+        "title": { "type": "string" },
+        "comment": { "type": "string" },
+        "verifiedVisit": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["approved", "pending", "hidden"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["patientName", "rating", "comment", "status"]
+    }
+  },
+  "firestore": {
+    "/reviews/{reviewId}": {
+      "schema": "review",
+      "description": "Patient testimonials and reviews"
+    },
+    "/doctors/{doctorId}": {
+      "schema": "doctor",
+      "description": "Doctor directory profiles"
+    },
+    "/doctor_schedules/{scheduleId}": {
+      "schema": "doctorSchedule",
+      "description": "Visiting schedules of doctors"
+    },
+    "/doctor_schedules/{scheduleId}/slots/{slotId}": {
+      "schema": "appointmentSlot",
+      "description": "Slots generated for a doctor schedule"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": "appointment",
+      "description": "Booked appointments"
+    },
+    "/medicines/{medicineId}": {
+      "schema": "medicine",
+      "description": "Medicine store inventory"
+    },
+    "/medicine_requests/{requestId}": {
+      "schema": "medicineRequest",
+      "description": "Customer medicine delivery requests"
+    },
+    "/settings/{settingId}": {
+      "schema": "storeSettings",
+      "description": "Global store settings"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "auditLog",
+      "description": "Admin action audit logs"
+    },
+    "/admins/{adminId}": {
+      "schema": "adminUser",
+      "description": "Authorized admin users"
+    }
+  }
+}
